@@ -4,30 +4,29 @@ const path = require('path');
 
 const directoryPath = path.join(__dirname, 'pdfs');
 
-fs.readdir(directoryPath, async (err, files) => {
-    //handling error
-    if (err) {
-        return console.log('Unable to scan directory: ' + err);
-    }
 
-    const promises = files.map(file => {
-        console.log(file);
-        return parsePDF(file);
+function clCashout {
+    fs.readdir(directoryPath, async (err, files) => {
+        if (err) {
+            return console.log('Unable to scan directory: ' + err);
+        }
+
+        const promises = files.map(file => {
+            console.log(file);
+            return parsePDF(file);
+        });
+
+        let data = await Promise.all(promises);
+        let values = data.map(el => getCashValue(el.text));
+
+        const sum = getSum(values);
+        console.log(sum);
     });
-
-    let data = await Promise.all(promises);
-    let values = data.map(el => getCashValue(el.text));
-
-    const sum = getSum(values);
-    console.log(sum);
-});
-
+}
 
 function getSum(values) {
     return values.reduce((p,c) => p + c);
 }
-
-
 
 function parsePDF(file) {
     let dataBuffer = fs.readFileSync(path.join(__dirname, 'pdfs', file));
@@ -48,3 +47,5 @@ function getCashValue(data) {
 function clearNumber(stringNumber) {
     return parseFloat(stringNumber.replace(/\D+/, '').replace(',', '.').replace(' ', ''));
 }
+
+module.exports = clCashout;

@@ -1,0 +1,1 @@
+### Just use `npx cl-cashout`
